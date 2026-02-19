@@ -1,5 +1,6 @@
 package hei.group.pushdowninvoice;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -197,6 +198,27 @@ public class InvoiceTotal {
         conn.close();
         return invoiceTaxSummaryList;
     }
-
+    public BigDecimal computeWeightedTurnorverTTC() throws SQLException {
+        DabaseConnection db = new DabaseConnection();
+        Connection conn = db.getConnection();
+        BigDecimal weightedTurnorver = BigDecimal.ZERO;
+        String sql= """
+                select sum(
+                    CASE
+                        When i.status='PAID'
+                        then ROUND(((il.quantity*il.unit_price) * (1+tc.rate/100))::numeric,2)
+                        when i.status='CONFIRMED'
+                        then round(((il.quantity*il.unit_price)*(1+tc.rate/100)*0.5)::numeric,2)
+                        ELSE 0
+                        END) as total_amount
+                        from invoice i inner join invoice_line il on i.id=il.invoice_id cross join tax_config tc
+                """;
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs=ps.executeQuery();
+        if(rs.next()) {
+            weightedTurnorver=BigDecimal.valueOf(rs.getDouble("total_amount"));
+        }
+        return weightedTurnorver;
+    }
 
 }

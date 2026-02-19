@@ -10,7 +10,8 @@ try{
     //System.out.println(invoiceTotal.findInvoiceConfirmedAndPaidInvoiceTotal());
     //System.out.println(invoiceTotal.computeStatusTotals());
     //System.out.println(invoiceTotal.compteWeightedTurnorver());
-    System.out.println(invoiceTotal.findInvoiceTaxSummary());
+    //System.out.println(invoiceTotal.findInvoiceTaxSummary());
+    System.out.println(invoiceTotal.computeWeightedTurnorverTTC());
 }catch(Exception e){
     System.out.println(e.getMessage());
 }
